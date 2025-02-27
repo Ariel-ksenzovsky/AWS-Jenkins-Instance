@@ -108,85 +108,15 @@ pipeline {
             }
         }
 
-        stage('Launch EC2 Instance') {
+        sstage('Deploy with Terraform') {
             steps {
                 script {
-                    // Create User Data script to install Docker and Docker Compose
-                    def userData = '''#!/bin/bash
-                        # Update the package repository and install Docker
-                        sudo yum update -y
-                        sudo yum install -y docker
-                        sudo systemctl start docker
-                        sudo systemctl enable docker
-
-                        COMPOSE_VERSION=$(curl -s https://api.github.com/repos/docker/compose/releases/latest | jq -r '.tag_name')
-
-                        # Install docker-compose
-                        sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-                        sudo chmod +x /usr/local/bin/docker-compose
-
-                        # Add ec2-user to the docker group to run docker without sudo
-                        sudo usermod -a -G docker ec2-user
+                    // Run Terraform init and apply
+                    sh '''
+                    cd AWS-Jenkins-Instance/terraform
+                    terraform init
+                    terraform apply -auto-approve
                     '''
-
-                    // Run the AWS CLI command to launch an EC2 instance with the User Data script
-                    def launchCommand = """
-                        aws ec2 run-instances \
-                            --image-id ${env.AMI_ID} \
-                            --instance-type ${env.INSTANCE_TYPE} \
-                            --key-name ${env.KEY_NAME} \
-                            --region ${env.AWS_REGION} \
-                            --network-interfaces '[{"NetworkInterfaceId":"eni-010d0c6160079f615","DeviceIndex":0}]' \
-                            --user-data "${userData}" \
-                            --output json
-                            sleep 30
-                    """
-
-                    def result = sh(script: launchCommand, returnStdout: true).trim()
-                    echo "EC2 Launch Command Result: ${result}"
-            
-                    // Extract InstanceId and ReservationId
-                    def instanceId = sh(script: "echo '${result}' | jq -r '.Instances[0].InstanceId'", returnStdout: true).trim()
-                    def reservationId = sh(script: "echo '${result}' | jq -r '.ReservationId'", returnStdout: true).trim()
-                    echo "Launched EC2 Instance ID: ${instanceId}, Reservation ID: ${reservationId}"
-            
-                    // Optional: Retrieve Public IP
-                    def publicIp = sh(script: """
-                        aws ec2 describe-instances \
-                        --instance-id ${instanceId} \
-                        --query 'Reservations[0].Instances[0].PublicIpAddress' \
-                        --output text \
-                        --region ${env.AWS_REGION}
-                    """, returnStdout: true).trim()
-                    echo "Instance Public IP: ${publicIp}"
-
-                    // Debug variables
-                    echo "Public IP: ${publicIp}"
-                    echo "Key Path: ${KEY_NAME}"
-
-                    // Use SCP to copy multiple files to the EC2 instance
-                    withCredentials([sshUserPrivateKey(credentialsId: 'instance-test', keyFileVariable: 'KEY_NAME', usernameVariable: 'ec2-user')]) {
-                        sh """
-                             scp -i ${KEY_NAME} -o StrictHostKeyChecking=no \
-                                /var/lib/jenkins/workspace/test1/AWS-Jenkins-Instance/docker-compose.yml \
-                                /var/lib/jenkins/workspace/test1/AWS-Jenkins-Instance/init.sql \
-                                /var/lib/jenkins/workspace/test1/AWS-Jenkins-Instance/.env \
-                                ec2-user@${publicIp}:/home/ec2-user/
-                                sleep10
-
-                            # Set environment variable on remote host
-                                ssh -o StrictHostKeyChecking=no -i ${KEY_NAME} ec2-user@${publicIp} \
-                                'echo 'DB_PASSWORD=${DB_PASSWORD}' >> /home/ec2-user/.env'
-                                
-                            # Run Docker Compose in remote session
-                            ssh -o StrictHostKeyChecking=no -i ${KEY_NAME} ec2-user@${publicIp} << 'EOF'
-                                sleep 5 
-                                pwd 
-                                sleep 30
-                                sudo docker-compose up -d --quiet-pull
-                            << EOF
-                        """
-                    }
                 }
             }
         }
