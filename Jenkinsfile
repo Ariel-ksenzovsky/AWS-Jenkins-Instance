@@ -105,7 +105,6 @@ pipeline {
 
         sstage('Deploy with Terraform') {
             steps {
-                script {
                     // Run Terraform init and apply
                     sh '''
                     cd AWS-Jenkins-Instance-terraform
@@ -114,7 +113,6 @@ pipeline {
                     terraform init
                     terraform apply -auto-approve
                     '''
-                }
             }
         }
     }
