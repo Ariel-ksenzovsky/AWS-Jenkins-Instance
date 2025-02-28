@@ -20,13 +20,13 @@ resource "tls_private_key" "example" {
 
 # Create an AWS key pair using the generated public key
 resource "aws_key_pair" "key_pair" {
-  key_name   = "instance-test-key"
+  key_name   = "instance-test-key-Jenkins"
   public_key = tls_private_key.example.public_key_openssh
 }
 
 # Create the security group with necessary ports
 resource "aws_security_group" "sg" {
-  name_prefix = "terraform-sg-"
+  name_prefix = "terraform-sg-Jenkins"
 
   ingress {
     from_port   = 3306
@@ -58,7 +58,7 @@ resource "aws_security_group" "sg" {
 }
 
 # Create the EC2 instance and associate the existing IAM role
-resource "aws_instance" "docker_instance" {
+resource "aws_instance" "Jenkins_instance" {
   ami             = "ami-0df8c184d5f6ae949"  # Replace with your desired AMI ID
   instance_type   = "t2.micro"
   key_name        = aws_key_pair.key_pair.key_name
@@ -81,7 +81,7 @@ resource "aws_instance" "docker_instance" {
               EOF
 
   tags = {
-    Name = "FlaskAppInstance"
+    Name = "FlaskAppInstanceJenkins"
   }
 }
 
