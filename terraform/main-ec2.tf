@@ -85,7 +85,4 @@ resource "aws_instance" "Jenkins_instance" {
   }
 }
 
-# Output the public IP of the created EC2 instance
-output "public_ip" {
-  value = aws_instance.docker_instance.public_ip
-}
+
