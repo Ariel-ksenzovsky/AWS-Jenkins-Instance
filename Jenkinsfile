@@ -7,11 +7,6 @@ pipeline {
         DOCKER_TOKEN_ID = 'docker-hub-token'
         DOCKER_IMAGE = 'arielk2511/star_meme_sql_compose'
         BUILD_NUM = "${BUILD_NUMBER}"
-        AWS_CREDENTIALS = 'aws-creds'
-        AWS_REGION = 'us-east-1'         // Replace with your AWS region
-        AMI_ID = 'ami-01816d07b1128cd2d' // Replace with your AMI ID
-        INSTANCE_TYPE = 't2.micro'      // Replace with your desired instance type
-        KEY_NAME = 'instance-test'      // Replace with your EC2 key pair name
     }
 
     triggers {
