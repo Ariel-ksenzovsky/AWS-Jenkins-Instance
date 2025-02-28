@@ -108,7 +108,7 @@ pipeline {
                 script {
                     // Run Terraform init and apply
                     sh '''
-                    cd AWS-Jenkins-Instance-terraform
+                    cd AWS-Jenkins-Instance
                     pwd
                     cd terraform
                     terraform init
