@@ -74,10 +74,10 @@ resource "aws_instance" "Jenkins_instance" {
               sudo yum install -y git ansible
 
               # Clone the repository containing the Ansible playbook
-              git clone https://github.com/Ariel-ksenzovsky/star-image-app.git /home/ec2-user/star-image-app
+              git clone https://github.com/Ariel-ksenzovsky/AWS-Jenkins-Instance.git /home/ec2-user/AWS-Jenkins-Instance
 
               # Run the Ansible playbook
-              ansible-playbook /home/ec2-user/star-image-app/ansible-flask-app-ec2.yml
+              ansible-playbook /home/ec2-user/AWS-Jenkins-Instance/ansible-flask-app-ec2.yml
               EOF
 
   tags = {
