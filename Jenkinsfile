@@ -113,7 +113,9 @@ pipeline {
                 script {
                     // Run Terraform init and apply
                     sh '''
-                    cd AWS-Jenkins-Instance/terraform
+                    cd AWS-Jenkins-Instance-terraform
+                    pwd
+                    cd terraform
                     terraform init
                     terraform apply -auto-approve
                     '''
