@@ -4,6 +4,7 @@ services:
   app:
     build: .
     image: arielk2511/star_meme_sql_compose:latest
+    pull_policy: always
     container_name: docker-gif-app
     ports:
       - "${FLASK_PORT}:${FLASK_PORT}"
