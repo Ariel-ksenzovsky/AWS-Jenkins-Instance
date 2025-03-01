@@ -5,7 +5,7 @@
 
   vars:
     docker_compose_version: "1.29.2"
-    repo_url: "https://github.com/Ariel-ksenzovsky/AWS-Terraform-Instance.git"
+    repo_url: "https://github.com/Ariel-ksenzovsky/AWS-Jenkins-Instance.git"
     s3_bucket: "my-bucket101110101"
     s3_env_path: "configs/.env"
 
@@ -44,17 +44,17 @@
     - name: Clone the Flask app repository
       git:
         repo: "{{ repo_url }}"
-        dest: /home/ec2-user/AWS-Terraform-Instance
+        dest: /home/ec2-user/AWS-Jenkins-Instance
         version: HEAD
 
     - name: Copy the .env file from S3
-      command: aws s3 cp s3://{{ s3_bucket }}/{{ s3_env_path }} /home/ec2-user/AWS-Terraform-Instance/.env
+      command: aws s3 cp s3://{{ s3_bucket }}/{{ s3_env_path }} /home/ec2-user/AWS-Jenkins-Instance/.env
       args:
-        creates: /home/ec2-user/AWS-Terraform-Instance/.env
+        creates: /home/ec2-user/AWS-Jenkins-Instance/.env
 
     - name: Run Docker Compose to start the application
       shell: |
         docker-compose pull
         docker-compose up
       args:
-        chdir: /home/ec2-user/AWS-Terraform-Instance
+        chdir: /home/ec2-user/AWS-Jenkins-Instance
