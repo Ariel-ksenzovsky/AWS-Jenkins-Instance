@@ -3,7 +3,7 @@ version: '3.8'
 services:
   app:
     build: .
-    image: arielk2511/star_meme_sql_compose:2.0
+    image: arielk2511/star_meme_sql_compose
     container_name: docker-gif-app
     ports:
       - "${FLASK_PORT}:${FLASK_PORT}"
