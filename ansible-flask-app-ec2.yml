@@ -53,6 +53,8 @@
         creates: /home/ec2-user/AWS-Terraform-Instance/.env
 
     - name: Run Docker Compose to start the application
-      shell: docker compose up --pull always -d
+      shell: |
+        docker-compose pull
+        docker-compose up
       args:
         chdir: /home/ec2-user/AWS-Terraform-Instance
