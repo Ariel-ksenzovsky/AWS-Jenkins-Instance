@@ -80,7 +80,7 @@ pipeline {
                 pwd
                 cd AWS-Jenkins-Instance
                 pwd
-                docker compose up -d
+                docker compose up --pull always -d
                 docker ps
                 '''
             }
